@@ -13,9 +13,9 @@ class GoodsController extends Controller {
     //列表展示
     public function showList(){
         //数据库是否可以使用
-        $goods = D('Goods');
-        dump($goods);
-//        $this -> display();
+//        $goods = D('Goods');
+//        dump($goods);
+        $this -> display();
     }
     //添加商品
     public function addGood(){
