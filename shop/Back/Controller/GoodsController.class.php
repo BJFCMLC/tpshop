@@ -13,9 +13,12 @@ class GoodsController extends Controller {
     //列表展示
     public function showList(){
         $goods = new \Model\GoodsModel();
-        $info = $goods -> select();
+        $nowInfo = $goods ->fetchData();
 
+        $info = $nowInfo['pageinfo'];
+        $pagelist = $nowInfo['pagelist'];
         $this -> assign('info',$info);
+        $this -> assign('pagelist',$pagelist);
         $this -> display();
     }
     //添加商品
@@ -42,7 +45,24 @@ class GoodsController extends Controller {
     }
     //修改商品
     public function modifyGood(){
-        $this -> display();
+
+        $goods = new \Model\GoodsModel();
+        //展示和收集在一个方法
+        if(IS_POST){
+            $data = $goods -> create();
+            if($goods -> save($data)){
+                $this -> success('修改商品成功', U('showlist'), 2);
+            }else{
+                $this -> error('修改商品失败', U('upd',array('goods_id'=>$data['goods_id'])), 2);
+            }
+        }else{
+            $goods_id = I('get.goods_id');
+            $info =D('Goods')->find($goods_id);
+
+            $this->assign('info',$info);
+            $this -> display();
+        }
+
     }
 
 }

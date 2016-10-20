@@ -16,6 +16,12 @@ return array(
     //配置路径,方便第三方插件访问
     'PLUGIN_URL' =>'/Plugin/',
 
+    //给shop/Common定义访问的路径
+    'COMMON_URL' =>'/Common/',
+
+    //定义网站域名地址,方便图片显示
+    'SITE_URL' =>'http://web.tpshop.com/',
+
     /* 数据库设置 */
     'DB_TYPE'               =>  'mysql',     // 数据库类型
     'DB_HOST'               =>  'localhost', // 服务器地址
