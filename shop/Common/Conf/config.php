@@ -2,6 +2,9 @@
 return array(
     //'配置项'=>'配置值'
 
+    //在页面底部设置显示跟踪信息
+    'SHOW_PAGE_TRACE' => true,
+
     //静态文件访问路由路径设置
     //前台
     'CSS_URL'=>'/Home/Public/style/',

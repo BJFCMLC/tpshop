@@ -58,6 +58,10 @@
             line-height: 20px;
             padding: 4px 15px 4px 18px;
         }
+        li{
+            float:left;
+            list-style:none;
+        }
     </style>
 </head>
 <body>
@@ -94,44 +98,54 @@
                 <td><input type="text" name="goods_price"  value="{$info.goods_price}" /></td>
             </tr>                    <tr>
             <td>商品logo图片</td>
-            <td><input type="file" name="goods_logo_upd" /></td>
+            <td>
+                <input type="file" name="goods_logo_upd" />
+                <notempty name='info["goods_big_logo"]'>
+                    <img src='{$Think.config.SITE_URL}{$info.goods_big_logo}' width='200' height='200' alt='' />
+                    <span>如果选择新图片上传则会覆盖旧logo图片</span>
+                </notempty>
+
+            </td>
         </tr>
         </table>
-        <table border="1" width="100%" class="table_a" id="detail-tab-tb"
-               style="display:none;"
-        >
+        <table border="1" width="100%" class="table_a" id="detail-tab-tb" style="display:none;">
             <tr>
                 <td>商品详细描述</td>
                 <td>
                     <textarea name="goods_introduce" id='goods_introduce' style="width:730px;height:320px;">{$info.goods_introduce}</textarea>
                 </td>
             </tr>
-            <script type='text/javascript'>
-                var ue = UE.getEditor('goods_introduce');
-            </script>
         </table>
-        <table border="1" width="100%" class="table_a" id="mix-tab-tb"
-               style="display:none;"
-        >
+        <table border="1" width="100%" class="table_a" id="mix-tab-tb" style="display:none;">
             <tr>
                 <td>商品重量</td>
                 <td><input type="text" name="goods_weight" /></td>
             </tr>
         </table>
-        <table border="1" width="100%" class="table_a" id="properties-tab-tb"
-               style="display:none;"
-        >
+        <table border="1" width="100%" class="table_a" id="properties-tab-tb" style="display:none;">
             <tr>
                 <td>商品相关属性</td>
                 <td></td>
             </tr>
         </table>
-        <table border="1" width="100%" class="table_a" id="gallery-tab-tb"
-               style="display:none;"
-        >
+        <table border="1" width="100%" class="table_a" id="gallery-tab-tb" style="display:none;">
+            <notempty name='picsinfo'>
+                <tr>
+                    <td colspan='100'>
+                        <ul>
+                            <foreach name='picsinfo' item='v'>
+                                <li id="pics_{$v.id}"><img src='{$Think.config.SITE_URL}{$v.pics_big}' alt='' width='100' height='100'/>
+                                    <span style='cursor:pointer;' onclick='if(confirm("确实要删除该相册图片么？")){del_pics({$v.id})}'>[-]</span>
+                                </li>
+                            </foreach>
+                        </ul>
+                    </td>
+                </tr>
+            </notempty>
+
             <tr>
                 <td><span style="cursor:pointer" onclick="add_item()">[+]</span>商品相册</td>
-                <td><input type='file' name='goods_pics[]' /></td>
+                <td><input type='file' name='goods_pics_upd[]' /></td>
             </tr>
         </table>
         <table width="100%">
@@ -145,6 +159,10 @@
     </form>
 </div>
 </body>
+
+<script type='text/javascript'>
+    var ue = UE.getEditor('goods_introduce');
+</script>
 
 <script type="text/javascript">
     $(function(){
@@ -161,8 +179,23 @@
 
 <script type="text/javascript">
     function add_item(){
-        var newText = "<tr><td><span style='cursor:pointer' onclick='$(this).parent().parent().remove()'>[-]</span>商品相册</td><td><input type='file' name='goods_pics[]' /></td></tr>";
+        var newText = "<tr><td><span style='cursor:pointer' onclick='$(this).parent().parent().remove()'>[-]</span>商品相册</td><td><input type='file' name='goods_pics_upd[]' /></td></tr>";
         $('#gallery-tab-tb').append(newText);
+    }
+</script>
+
+<script type="text/javascript">
+    function del_pics(pics_id){
+        $.ajax({
+            url:"{:U('delPics')}",
+            data:{"pics_id":pics_id},
+            //dataType:,  //默认的数据类型是字符型
+            //type:,  // 默认的传递方式是get
+            success:function(msg){
+                //alert(msg);
+                $('#pics_'+pics_id).remove();
+            }
+        });
     }
 </script>
 </html>

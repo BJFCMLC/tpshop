@@ -56,13 +56,36 @@ class GoodsController extends Controller {
                 $this -> error('修改商品失败', U('upd',array('goods_id'=>$data['goods_id'])), 2);
             }
         }else{
-            $goods_id = I('get.goods_id');
-            $info =D('Goods')->find($goods_id);
+            $goods_id = I('get.goods_id'); //接收被修改商品的goods_id
+            $info = $goods->find($goods_id);//查询被修改商品的信息
 
-            $this->assign('info',$info);
+            /*************获得相册信息*************/
+            $picsinfo = D('GoodsPics')->where(array('goods_id'=>$goods_id))->select();
+            if(!empty($picsinfo))
+                $this -> assign('picsinfo',$picsinfo);
+            /*************获得相册信息*************/
+
+
+            $this -> assign('info',$info);
             $this -> display();
         }
 
+    }
+
+    //删除单个相册图片
+    function delPics(){
+        $pics_id = I('get.pics_id');
+        //查询图片
+        $info = D('GoodsPics')->find($pics_id);
+        //①删除相册图片[物理删除]
+        unlink($info['pics_big']);
+        unlink($info['pics_small']);
+
+        //②删除数据记录信息
+        $z = D('GoodsPics')->delete($pics_id); //返回删除记录条数,1条
+        if($z){
+            echo "删除成功！";
+        }
     }
 
 }

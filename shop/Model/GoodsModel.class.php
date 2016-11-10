@@ -128,6 +128,7 @@ class GoodsModel extends Model{
      */
     protected function _before_update(&$data,$options)
     {
+        /****************logo图片处理start******************/
         //判断是否有上传logo图片，并做处理
         if ($_FILES['goods_logo_upd']['error'] === 0) {
             //1)删除该商品原先的物理图片
@@ -157,6 +158,52 @@ class GoodsModel extends Model{
             //保存缩略图到数据库
             $data['goods_small_logo'] = $small_path_name;
         }
+        /****************logo图片处理end******************/
+
+        /****************相册图片处理start******************/
+        //判断相册图片
+        //上传相册图片判断（只要有一个相册上传，就往下进行）
+        $flag = false;
+        foreach($_FILES['goods_pics_upd']['error'] as $a => $b){
+            if($b === 0){
+                $flag = true;
+                break;
+            }
+        }
+        if($flag === true){
+            //商品相册图片上传
+            $cfg = array(
+                'rootPath'      =>  './Common/Pics/', //保存根路径
+            );
+            //dump($_FILES);
+            $up = new \Think\Upload($cfg);
+            $z = $up -> upload(array('goods_pics_upd'=>$_FILES['goods_pics_upd']));
+            //通过返回值$z可以看到对应的上传ok的附件信息
+
+            //遍历$z,获得每个附件的信息，存储到数据表中goods_pics
+            foreach($z as $k => $v){
+                $pics_big_name = $up->rootPath.$v['savepath'].$v['savename'];
+
+                /******根据大图，制作缩略图******/
+                $im = new \Think\Image();//实例化对象
+                $im -> open($pics_big_name); //打开原图
+                $im -> thumb(60,60); //制作缩略图
+                //缩略图名字：“small_原图名字”
+                $pics_small_name = $up->rootPath.$v['savepath']."small_".$v['savename'];
+                $im -> save($pics_small_name);//存储缩略图到服务器
+                /******根据大图，制作缩略图******/
+
+                $arr = array(
+                    'goods_id' => $options['where']['goods_id'],
+                    'pics_big' => $pics_big_name,
+                    'pics_small' => $pics_small_name,
+                );
+                //实现相册存储
+                D('GoodsPics')->add($arr);
+            }
+        }
+        /****************相册图片处理end******************/
+
     }
 
 
